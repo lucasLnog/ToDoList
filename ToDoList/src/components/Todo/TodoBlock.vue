@@ -45,6 +45,7 @@
       <todo-table
         :_todo-list="toDoSectionList"
         @delete-section="deleteSection"
+        @delete-task="deleteTask"
       />
     </div>
     <section-create
@@ -84,7 +85,15 @@ export default {
       this.toDoSectionList = this.toDoSectionList.filter(
         (section) => section.uuid !== sectionUuid
       );
-    }
+    },
+    deleteTask: function (taskUuid) {
+      this.toDoSectionList = this.toDoSectionList.map((section) => {
+        return {
+          ...section,
+          children: section.children.filter((task) => task.uuid !== taskUuid)
+        };
+      });
+    },
   },
 };
 </script>

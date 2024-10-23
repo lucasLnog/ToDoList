@@ -1,13 +1,15 @@
 <template>
-  <div :class="todoList.length > 5 ? 'horizontal-scroll-container' : 'horizontal-scroll-container-default'" class="q-pb-md">
+  <div :class="todoList.length > 5 ? 'horizontal-scroll-container' : 'horizontal-scroll-container-default'" class="q-pb-md q-ml-md">
     <div v-for="section in todoList" :key="section.uuid">
         <div class="section-block-style q-mr-lg">
           <div class="flex justify-between items-center q-mx-sm q-my-sm">
-            <span
-              v-if="!section.isEditing"
-              v-html="section.name"
-              class="name-section-style text-blue-9 text-weight-bold fs-16"
-            />
+            <div v-if="!section.isEditing" class="name-section-style">
+              <span
+                v-html="section.name"
+                class="text-blue-9 text-weight-bold fs-16"
+              />
+              <q-tooltip v-if="section.name.length > 11">{{ section.name }}</q-tooltip>
+            </div>
             <q-input
               v-else
               v-model="section.name"
@@ -31,16 +33,19 @@
               <template v-slot:prepend>
                 <q-icon name="add" color="blue-9"/>
               </template>
+              <template v-slot:append>
+                <q-icon name="cancel" color="blue-9" size="xs" class="cursor-pointer q-mb-md q-mt-xs q-ml-lg" @click="cancelAdding(section)"/>
+              </template>
             </q-input>
           </div>
-          <div class="vertical-scroll-container">
+          <div class="vertical-scroll-container" :class="section.isAdding ? 'q-mt-md' : ''" :style="section.isAdding ? 'max-height: 275px' : 'max-height: 350px'">
             <q-virtual-scroll
               :items="section.children"
               virtual-scroll-vertical
               class="q-pa-sm"
             >
               <template v-slot="{ item: task }">
-                <todo-card :_todo-data="task"/>
+                <todo-card :_todo-data="task" @delete-task="deleteTask"/>
               </template>
             </q-virtual-scroll>
           </div>
@@ -50,6 +55,8 @@
 </template>
 
 <script>
+import { v4 as uuid4 } from "uuid";
+
 export default {
   name: "TodoTable",
   props: {
@@ -65,10 +72,9 @@ export default {
     return {
       taskDefault: {
         name: "",
+        uuid: null,
         parentId: null,
-        level: 1,
         isDone: false,
-        children: [],
       },
       taskName: "",
     };
@@ -94,11 +100,19 @@ export default {
     addTask: function (section) {
       let task = {...this.taskDefault};
       task.name = this.taskName;
+      task.uuid = uuid4();
       task.parentId = section.id;
       section.children.push(task);
       this.taskName = "";
       section.isAdding = false;
-    }
+    },
+    cancelAdding: function (section) {
+      this.taskName = "";
+      section.isAdding = false;
+    },
+    deleteTask: function (task) {
+      this.$emit("delete-task", task.uuid);
+    },
   }
 };
 </script>
@@ -135,7 +149,7 @@ export default {
     white-space: nowrap;        
     overflow: hidden;           
     text-overflow: ellipsis;    
-    max-width: 100px;               
+    max-width: 100px;         
 }
 
 .add-name-style {
@@ -145,7 +159,6 @@ export default {
 
 .vertical-scroll-container {
   display: block !important;
-  max-height: 250px;
   overflow-y: auto;
 }
 </style>
