@@ -4,10 +4,20 @@
       <q-checkbox v-model="task.isDone" size="xs" />
     </div>
     <div class="name-task-style">
-        <span v-html="task.name" class="name-task-style" :class="task.isDone ? 'strikethrough' : ''"/>
-        <q-tooltip v-if="task.name.length > 18">{{ task.name }}</q-tooltip>
+      <span
+        v-html="task.name"
+        class="name-task-style"
+        :class="task.isDone ? 'strikethrough' : ''"
+      />
+      <q-tooltip v-if="task.name.length > 18">{{ task.name }}</q-tooltip>
     </div>
-    <q-icon name="delete" size="xs" color="blue-9" class="cursor-pointer q-ml-sm" @click="deleteTask(task)"/>
+    <q-icon
+      name="delete"
+      size="xs"
+      color="blue-9"
+      class="cursor-pointer q-ml-sm"
+      @click="deleteTask(task)"
+    />
   </div>
 </template>
 
@@ -21,19 +31,18 @@ export default {
     },
   },
   data: function () {
-    return {
-    };
+    return {};
   },
   computed: {
     task: function () {
-      return this._todoData
-    }
+      return this._todoData;
+    },
   },
   methods: {
     deleteTask: function (task) {
       this.$emit("delete-task", task);
     },
-  }
+  },
 };
 </script>
 

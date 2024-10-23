@@ -1,55 +1,96 @@
 <template>
-  <div :class="todoList.length > 5 ? 'horizontal-scroll-container' : 'horizontal-scroll-container-default'" class="q-pb-md q-ml-md">
+  <div
+    :class="todoList.length > 5 ? 'horizontal-scroll-container' : 'horizontal-scroll-container-default'"
+    class="q-pb-md q-ml-md"
+  >
     <div v-for="section in todoList" :key="section.uuid">
-        <div class="section-block-style q-mr-lg">
-          <div class="flex justify-between items-center q-mx-sm q-my-sm">
-            <div v-if="!section.isEditing" class="name-section-style">
-              <span
-                v-html="section.name"
-                class="text-blue-9 text-weight-bold fs-16"
-              />
-              <q-tooltip v-if="section.name.length > 11">{{ section.name }}</q-tooltip>
-            </div>
-            <q-input
-              v-else
-              v-model="section.name"
-              @keyup.enter="finishEditing(section)"
-              @blur="finishEditing(section)"
-              label="Editar nome da seção"
-              autofocus
+      <div class="section-block-style q-mr-lg">
+        <div class="flex justify-between items-center q-mx-sm q-my-sm">
+          <div v-if="!section.isEditing" class="name-section-style">
+            <span
+              v-html="section.name"
+              class="text-blue-9 text-weight-bold fs-16"
             />
-            <div v-if="!section.isEditing" class="q-ml-md">
-              <q-icon name="drive_file_rename_outline" size="sm" color="blue-9" @click="editSection(section)" class="cursor-pointer"/>
-              <q-icon name="add_box" size="sm" color="blue-9" @click="setAddTask(section)" class="cursor-pointer"/>
-              <q-icon name="delete" size="sm" color="blue-9" @click="deleteSection(section.uuid)" class="cursor-pointer"/>
-            </div>
+            <q-tooltip v-if="section.name.length > 11">
+              {{section.name}}
+            </q-tooltip>
           </div>
-          <q-separator 
-            class="q-mx-sm"
-            color="blue-9"
+          <q-input
+            v-else
+            v-model="section.name"
+            @keyup.enter="finishEditing(section)"
+            @blur="finishEditing(section)"
+            label="Editar nome da seção"
+            autofocus
           />
-          <div v-if="section.isAdding" class="add-name-style q-mt-sm">
-            <q-input v-model="taskName" label="Nova tarefa" @keyup.enter="addTask(section)" color="blue-9" dense outlined class="q-mx-sm">
-              <template v-slot:prepend>
-                <q-icon name="add" color="blue-9"/>
-              </template>
-              <template v-slot:append>
-                <q-icon name="cancel" color="blue-9" size="xs" class="cursor-pointer q-mb-md q-mt-xs q-ml-lg" @click="cancelAdding(section)"/>
-              </template>
-            </q-input>
-          </div>
-          <div class="vertical-scroll-container" :class="section.isAdding ? 'q-mt-md' : ''" :style="section.isAdding ? 'max-height: 275px' : 'max-height: 350px'">
-            <q-virtual-scroll
-              :items="section.children"
-              virtual-scroll-vertical
-              class="q-pa-sm"
-            >
-              <template v-slot="{ item: task }">
-                <todo-card :_todo-data="task" @delete-task="deleteTask"/>
-              </template>
-            </q-virtual-scroll>
+          <div v-if="!section.isEditing" class="q-ml-md">
+            <q-icon
+              name="drive_file_rename_outline"
+              size="sm"
+              color="blue-9"
+              @click="editSection(section)"
+              class="cursor-pointer"
+            />
+            <q-icon
+              name="add_box"
+              size="sm"
+              color="blue-9"
+              @click="setAddTask(section)"
+              class="cursor-pointer"
+            />
+            <q-icon
+              name="delete"
+              size="sm"
+              color="blue-9"
+              @click="deleteSection(section.uuid)"
+              class="cursor-pointer"
+            />
           </div>
         </div>
+        <q-separator class="q-mx-sm" color="blue-9" />
+        <div v-if="section.isAdding" class="add-name-style q-mt-sm">
+          <q-input
+            v-model="taskName"
+            label="Nova tarefa"
+            @keyup.enter="addTask(section)"
+            color="blue-9"
+            dense
+            outlined
+            class="q-mx-sm"
+          >
+            <template v-slot:prepend>
+              <q-icon name="add" color="blue-9" />
+            </template>
+            <template v-slot:append>
+              <q-icon
+                name="cancel"
+                color="blue-9"
+                size="xs"
+                class="cursor-pointer q-mb-md q-mt-xs q-ml-lg"
+                @click="cancelAdding(section)"
+              />
+            </template>
+          </q-input>
+        </div>
+        <div
+          class="vertical-scroll-container"
+          :class="section.isAdding ? 'q-mt-md' : ''"
+          :style="section.isAdding ? 'max-height: 275px' : 'max-height: 350px'"
+        >
+          <q-virtual-scroll
+            :items="section.children"
+            virtual-scroll-vertical
+            class="q-pa-sm"
+          >
+            <template v-slot="{ item: task }">
+              <todo-card
+                :_todo-data="task"
+                @delete-task="deleteTask"
+              />
+            </template>
+          </q-virtual-scroll>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -82,7 +123,7 @@ export default {
   computed: {
     todoList: function () {
       return this._todoList;
-    }
+    },
   },
   methods: {
     editSection: function (section) {
@@ -98,7 +139,7 @@ export default {
       section.isAdding = true;
     },
     addTask: function (section) {
-      let task = {...this.taskDefault};
+      let task = { ...this.taskDefault };
       task.name = this.taskName;
       task.uuid = uuid4();
       task.parentId = section.id;
@@ -113,7 +154,7 @@ export default {
     deleteTask: function (task) {
       this.$emit("delete-task", task.uuid);
     },
-  }
+  },
 };
 </script>
 
@@ -146,10 +187,10 @@ export default {
 }
 
 .name-section-style {
-    white-space: nowrap;        
-    overflow: hidden;           
-    text-overflow: ellipsis;    
-    max-width: 100px;         
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 }
 
 .add-name-style {
