@@ -69,6 +69,16 @@ export default {
       isSectionCreateOpen: false,
     };
   },
+  created: function () {
+    this.toDoSectionList = JSON.parse(
+      localStorage.getItem("toDoSectionList")
+    ) || [];
+  },
+  watch: {
+    toDoSectionList: function () {
+      localStorage.setItem("toDoSectionList", JSON.stringify(this.toDoSectionList));
+    },
+  },
   methods: {
     createSection: function () {
       this.isSectionCreateOpen = true;

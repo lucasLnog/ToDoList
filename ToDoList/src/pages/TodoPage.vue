@@ -27,6 +27,7 @@
     },
     methods: {
       goToMainPage: function () {
+        localStorage.clear();
         this.$router.push({ name: 'MainPage' });
       },
     },

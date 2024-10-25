@@ -146,6 +146,7 @@ export default {
       section.children.push(task);
       this.taskName = "";
       section.isAdding = false;
+      localStorage.setItem("toDoSectionList", JSON.stringify(this.todoList));
     },
     cancelAdding: function (section) {
       this.taskName = "";
